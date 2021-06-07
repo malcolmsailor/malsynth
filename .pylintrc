@@ -1,0 +1,70 @@
+[MASTER]
+
+# ignoring directories doesn't seem to work here
+# ignore=
+
+# It appears that if ignore-patterns has a trailing comma,
+#   pytest will not run pylint!
+; ignore-patterns=
+
+
+[MESSAGES CONTROL]
+
+disable=too-many-instance-attributes,
+    too-many-ancestors,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    too-many-return-statements,
+    too-few-public-methods,
+    too-many-public-methods,
+    too-many-arguments,
+    too-many-nested-blocks,
+    missing-function-docstring,
+    invalid-name,
+    pointless-string-statement,
+    duplicate-code,
+    too-many-lines,
+    fixme,
+    undefined-loop-variable,
+    no-member,
+# Delete eventually:
+    missing-class-docstring,
+    missing-module-docstring,
+    ; line-too-long,
+# Delete unsubscriptable-object when typing.Union bug is fixed in pylintrc
+    ; unsubscriptable-object,
+# This fails on isinstance(foo, typing.Sequence)
+# See https://github.com/PyCQA/pylint/issues/3507
+    ; isinstance-second-argument-not-valid-type,
+
+
+[BASIC]
+good-names=
+    x,
+    y,
+    f,
+    i,
+    j,
+    m,
+    n,
+    r,
+    er,
+    mf,
+    pc,
+    fc,
+    no,
+    ic,
+    op,
+    Cb,
+    Db,
+    Eb,
+    Fb,
+    Gb,
+    Ab,
+    Bb,
+    bII,
+    bIII,
+    bV,
+    bVI,
+    bVII,
