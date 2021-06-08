@@ -187,6 +187,7 @@ class Square(BaseSynth):
         return signal.square(t * pitch_to_hz(pitch + detune) + phase)
 
 
+# after https://stackoverflow.com/a/25192640/10155119
 def butter_lowpass(cutoff, fs, order=5):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq

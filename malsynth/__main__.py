@@ -51,16 +51,26 @@ def write_mono_wav(np_array, out_path_or_f, sample_rate):
 
 def play(synth_cls, wav_path):
     synth = synth_cls(SAMPLE_RATE)
-    loop = [48, 58, 60, 70, 60, 65, 67, 72]
-    note_dur = 0.25
-    total_dur = note_dur * len(loop)
+    # pitch, dur, wait
+    loop = [
+        (60, 1, 1),
+        (65, 0.5, 0.5),
+        (67, 0.25, 0.25),
+        (72, 0.25, 0.25),
+        (48, 0.25, 0.5),
+        (58, 0.25, 0.5),
+        (60, 0.125, 0.25),
+        (72, 0.125, 0.25),
+    ]
+    total_dur = sum(inc for _, _, inc in loop) + 1
     t = np.linspace(
         0, total_dur, int(math.ceil(total_dur * SAMPLE_RATE)), False
     )
     out = np.zeros_like(t)
     now = 0
-    for pitch in loop:
-        synth(t, out, pitch, now, now := now + note_dur)
+    for pitch, dur, increment in loop:
+        synth(t, out, pitch, now, now + dur)
+        now += increment
     # to avoid overflow
     out /= 1.1
 
@@ -79,8 +89,8 @@ def demo():
         _, wav_path = tempfile.mkstemp(suffix=".wav")
         try:
             if isinstance(synths := synth, list):
-                for synth in synths:
-                    play(synth, wav_path)
+                for synth_ in synths:
+                    play(synth_, wav_path)
             else:
                 play(synth, wav_path)
         except KeyboardInterrupt:

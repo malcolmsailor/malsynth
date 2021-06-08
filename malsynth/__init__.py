@@ -21,6 +21,9 @@ from .presets import (
     ShortSine,
     ShortSaw,
     ShortSquare,
+    ShortFollowSquare,
+    ShortFollowSaw,
     ShortDoubleSaw,
+    ShortTripleSine,
     synths,
 )
