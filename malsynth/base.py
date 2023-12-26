@@ -1,24 +1,33 @@
 import dataclasses
 import numbers
+
 import numpy as np
 from scipy import signal
 
+MIDDLE_C_HZ = 261.6255653005986
+
 
 class PitchToHz:
-    def __init__(self):
-        self.two_pi = 2 * np.pi
+    def __init__(self, tet=12):
+        self._two_pi = 2 * np.pi
         self._data = {}
+        self._tet = tet
+        self._middle_c_pitch_num = tet * 5
 
     def __call__(self, pitch):
         """Technically doesn't return hz but instead hz * 2 * pi.
 
         Args:
             pitch: midinumber.
-            phase: float, in radians
         """
         if pitch in self._data:
             return self._data[pitch]
-        hz = pitch = 440.0 * (2 ** ((pitch - 69) / 12.0)) * (self.two_pi)
+        # hz = 440.0 * (2 ** ((pitch - 69) / 12.0)) * (self.two_pi)
+        hz = (
+            MIDDLE_C_HZ
+            * (2 ** ((pitch - self._middle_c_pitch_num) / self._tet))
+            * self._two_pi
+        )
         self._data[pitch] = hz
         return hz
 
@@ -28,8 +37,8 @@ pitch_to_hz = PitchToHz()
 
 @dataclasses.dataclass
 class Oscillator:
-    phase: numbers.Number = 0
-    detune: numbers.Number = 0
+    phase: float | int = 0
+    detune: float | int = 0
 
 
 class BaseSynth:
@@ -62,14 +71,13 @@ class BaseSynth:
         self,
         sample_rate,
         oscillators=None,
-        amp=1,
+        amp=1.0,
         attack=0.005,
-        decay=0,
+        decay=0.0,
         sustain=1.0,
         release=0.005,
         memoize_envelopes=True,
     ):
-
         try:
             assert sustain == 1 or decay != 0
         except AssertionError:
@@ -92,9 +100,7 @@ class BaseSynth:
 
         self.release_dur = release
         self.release_i = int(sample_rate * release)
-        self.release_envelope = np.linspace(
-            self.sustain, self.min_amp, self.release_i
-        )
+        self.release_envelope = np.linspace(self.sustain, self.min_amp, self.release_i)
 
         self.sample_rate = sample_rate
         self.memoize_envelopes = memoize_envelopes
@@ -127,10 +133,14 @@ class BaseSynth:
         end_i = np.searchsorted(t, note_release + self.release_dur)
         x = t[start_i:end_i]
         x = self._synth(x, pitch)
+
         try:
-            x = self._filter(x)
+            filter = self._filter  # type:ignore
         except AttributeError:
             pass
+        else:
+            x = filter(x)
+
         x = self._envelope(x)
         out[start_i:end_i] += x * velocity / 127
 
@@ -155,9 +165,15 @@ class BaseSynth:
             envelope = self.get_envelope(len(t))
         return t * envelope
 
+    @staticmethod
+    def _waveform(t, pitch, phase=0, detune=0):
+        raise NotImplementedError
+
     def _synth(self, t, pitch):
         osc = self.oscillators[0]
-        out = self._waveform(t, pitch, phase=osc.phase, detune=osc.detune)
+        out = self._waveform(
+            t, pitch, phase=osc.phase, detune=osc.detune  # type:ignore
+        )
         for osc in self.oscillators[1:]:
             out += self._waveform(t, pitch, phase=osc.phase, detune=osc.detune)
         return out
@@ -296,4 +312,5 @@ class FollowSquare(Square, FollowFilterSynth):
 #             out[start_i:end_i] = signal.filtfilt(
 #                 b, a, t[start_i:end_i] * window[: end_i - start_i]
 #             )
+#         return out
 #         return out
