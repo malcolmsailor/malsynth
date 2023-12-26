@@ -24,22 +24,26 @@ def input_loop():
         print(f"{i:>3}: {synth.__name__}")
     print(f"{len(synths):>3}: Play all synths")
     while True:
-        a = input(
-            "\nEnter the number corresponding to the synth you would like to "
-            "hear ('q' to quit): "
-        ).strip()
+        a = (
+            input(
+                "\nEnter the number corresponding to the synth you would like to "
+                "hear ('q' to quit): "
+            )
+            .strip()
+            .lower()
+        )
         if a == "q":
             return None
         if a == str(len(synths)):
             return list(synths.values())
         try:
             return synths[int(a)]
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, KeyError):
             print("Invalid input, try again.")
 
 
 def write_mono_wav(np_array, out_path_or_f, sample_rate):
-    audio = (np_array * (2 ** 15 - 1)).astype("<h")
+    audio = (np_array * (2**15 - 1)).astype("<h")
     with wave.open(out_path_or_f, "wb") as f:
         # 2 Channels.
         f.setnchannels(1)
@@ -63,9 +67,7 @@ def play(synth_cls, wav_path):
         (72, 0.125, 0.25),
     ]
     total_dur = sum(inc for _, _, inc in loop) + 1
-    t = np.linspace(
-        0, total_dur, int(math.ceil(total_dur * SAMPLE_RATE)), False
-    )
+    t = np.linspace(0, total_dur, int(math.ceil(total_dur * SAMPLE_RATE)), False)
     out = np.zeros_like(t)
     now = 0
     for pitch, dur, increment in loop:
