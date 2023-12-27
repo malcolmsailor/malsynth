@@ -185,6 +185,12 @@ class Sine(BaseSynth):
         return np.sin(t * pitch_to_hz(pitch + detune) + phase)
 
 
+class Noise(BaseSynth):
+    @staticmethod
+    def _waveform(t, pitch, phase=0, detune=0):
+        return np.random.randn(*t.shape)
+
+
 class Saw(BaseSynth):
     def __init__(self, *args, amp=0.3, **kwargs):
         super().__init__(*args, amp=amp, **kwargs)

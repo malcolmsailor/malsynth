@@ -1,14 +1,16 @@
 import types
+
 from .base import (
-    Oscillator,
-    Sine,
-    Saw,
-    Square,
-    FollowSaw,
-    FollowSquare,
-    FilteredSynth,
     FilteredSaw,
     FilteredSquare,
+    FilteredSynth,
+    FollowSaw,
+    FollowSquare,
+    Noise,
+    Oscillator,
+    Saw,
+    Sine,
+    Square,
 )
 
 
@@ -63,29 +65,18 @@ class ShortSquare(Square):
 
 class ShortFollowSaw(FollowSaw):
     def __init__(self, *args, decay=0.1, sustain=0, release=0.1, **kwargs):
-        super().__init__(
-            *args, decay=decay, sustain=sustain, release=release, **kwargs
-        )
+        super().__init__(*args, decay=decay, sustain=sustain, release=release, **kwargs)
 
 
 class ShortFollowSquare(FollowSquare):
     def __init__(self, *args, decay=0.1, sustain=0, release=0.1, **kwargs):
-        super().__init__(
-            *args, decay=decay, sustain=sustain, release=release, **kwargs
-        )
+        super().__init__(*args, decay=decay, sustain=sustain, release=release, **kwargs)
 
 
 class ShortDoubleSaw(DoubleSaw):
-    def __init__(
-        self, *args, amp=0.4, decay=0.3, sustain=0, release=0.15, **kwargs
-    ):
+    def __init__(self, *args, amp=0.4, decay=0.3, sustain=0, release=0.15, **kwargs):
         super().__init__(
-            *args,
-            amp=amp,
-            decay=decay,
-            sustain=sustain,
-            release=release,
-            **kwargs
+            *args, amp=amp, decay=decay, sustain=sustain, release=release, **kwargs
         )
 
 
@@ -111,43 +102,39 @@ class DoubleFollowSquare(FollowSquare):
 
 
 class ShortDoubleFollowSaw(DoubleFollowSaw):
-    def __init__(
-        self, *args, amp=0.8, decay=0.2, sustain=0, release=0.15, **kwargs
-    ):
+    def __init__(self, *args, amp=0.8, decay=0.2, sustain=0, release=0.15, **kwargs):
         super().__init__(
-            *args,
-            amp=amp,
-            decay=decay,
-            sustain=sustain,
-            release=release,
-            **kwargs
+            *args, amp=amp, decay=decay, sustain=sustain, release=release, **kwargs
         )
 
 
 class ShortDoubleFollowSquare(DoubleFollowSquare):
-    def __init__(
-        self, *args, amp=0.7, decay=0.15, sustain=0, release=0.15, **kwargs
-    ):
+    def __init__(self, *args, amp=0.7, decay=0.15, sustain=0, release=0.15, **kwargs):
         super().__init__(
-            *args,
-            amp=amp,
-            decay=decay,
-            sustain=sustain,
-            release=release,
-            **kwargs
+            *args, amp=amp, decay=decay, sustain=sustain, release=release, **kwargs
         )
 
 
 class ShortTripleSine(TripleSine):
     def __init__(self, *args, decay=0.15, sustain=0, release=0.08, **kwargs):
-        super().__init__(
-            *args, decay=decay, sustain=sustain, release=release, **kwargs
-        )
+        super().__init__(*args, decay=decay, sustain=sustain, release=release, **kwargs)
 
 
 class FilteredDoubleSaw(DoubleSaw, FilteredSynth):
     def __init__(self, *args, amp=0.3, order=3, cutoff=2500, **kwargs):
         super().__init__(*args, amp=amp, order=order, cutoff=cutoff, **kwargs)
+
+
+class ShortNoise(Noise):
+    def __init__(self, *args, decay=0.1, sustain=0, **kwargs):
+        super().__init__(*args, decay=decay, sustain=sustain, **kwargs)
+
+
+class FilteredShortNoise(Noise, FilteredSynth):
+    def __init__(self, *args, decay=0.1, sustain=0, order=3, cutoff=4000, **kwargs):
+        super().__init__(
+            *args, decay=decay, sustain=sustain, order=order, cutoff=cutoff, **kwargs
+        )
 
 
 SYNTH_LIST = [
@@ -173,9 +160,13 @@ SYNTH_LIST = [
     ShortDoubleFollowSaw,
     ShortDoubleFollowSquare,
     ShortTripleSine,
+    Noise,
+    ShortNoise,
+    FilteredShortNoise,
 ]
 
 SYNTHS = {i: synth for (i, synth) in enumerate(SYNTH_LIST)}
 
 
+synths = types.MappingProxyType(SYNTHS)
 synths = types.MappingProxyType(SYNTHS)
